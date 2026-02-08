@@ -1,12 +1,16 @@
 const swaggerAutogen = require("swagger-autogen")();
 
+const isRender = !!process.env.RENDER_EXTERNAL_HOSTNAME;
+
 const doc = {
   info: {
     title: "Energy Drink Log API",
     description: "CRUD API for logging energy drinks",
   },
-  host: "localhost:3000",
-  schemes: ["http"],
+  host: isRender
+    ? process.env.RENDER_EXTERNAL_HOSTNAME
+    : `localhost:${process.env.PORT || 3000}`,
+  schemes: isRender ? ["https"] : ["http"],
 };
 
 const outputFile = "./swagger-output.json";
