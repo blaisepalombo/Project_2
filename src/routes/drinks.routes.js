@@ -1,3 +1,5 @@
+// FILE: src/routes/drinks.routes.js
+
 const { Router } = require("express");
 const {
   getAllDrinks,
@@ -6,6 +8,7 @@ const {
   updateDrink,
   deleteDrink,
 } = require("../controllers/drinks.controller");
+
 const { validateDrink } = require("../middleware/validateDrink");
 
 const router = Router();
@@ -21,7 +24,7 @@ router.get("/", getAllDrinks);
  * GET /drinks/{id}
  * @summary Get a drink log by ID
  * @tags Drinks
- * @param {string} id.path.required - MongoDB ObjectId
+ * @param {string} id.path.required - Drink ID
  */
 router.get("/:id", getDrinkById);
 
@@ -44,12 +47,11 @@ router.get("/:id", getDrinkById);
  */
 router.post("/", validateDrink, createDrink);
 
-
 /**
  * PUT /drinks/{id}
  * @summary Update a drink log by ID
  * @tags Drinks
- * @param {string} id.path.required - MongoDB ObjectId
+ * @param {string} id.path.required - Drink ID
  * @param {object} request.body.required - Updated drink
  * @example request.body
  * {
@@ -65,12 +67,11 @@ router.post("/", validateDrink, createDrink);
  */
 router.put("/:id", validateDrink, updateDrink);
 
-
 /**
  * DELETE /drinks/{id}
  * @summary Delete a drink log by ID
  * @tags Drinks
- * @param {string} id.path.required - MongoDB ObjectId
+ * @param {string} id.path.required - Drink ID
  */
 router.delete("/:id", deleteDrink);
 
