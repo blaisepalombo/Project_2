@@ -10,6 +10,7 @@ const {
 } = require("../controllers/drinks.controller");
 
 const { validateDrink } = require("../middleware/validateDrink");
+const { requireAuth } = require("../middleware/requireAuth");
 
 const router = Router();
 
@@ -30,7 +31,7 @@ router.get("/:id", getDrinkById);
 
 /**
  * POST /drinks
- * @summary Create a new drink log
+ * @summary Create a new drink log (requires login)
  * @tags Drinks
  * @param {object} request.body.required - Drink to create
  * @example request.body
@@ -45,11 +46,11 @@ router.get("/:id", getDrinkById);
  *   "notes": "Sweet and strong"
  * }
  */
-router.post("/", validateDrink, createDrink);
+router.post("/", requireAuth, validateDrink, createDrink);
 
 /**
  * PUT /drinks/{id}
- * @summary Update a drink log by ID
+ * @summary Update a drink log by ID (requires login)
  * @tags Drinks
  * @param {string} id.path.required - Drink ID
  * @param {object} request.body.required - Updated drink
@@ -65,14 +66,14 @@ router.post("/", validateDrink, createDrink);
  *   "notes": "Updated via PUT"
  * }
  */
-router.put("/:id", validateDrink, updateDrink);
+router.put("/:id", requireAuth, validateDrink, updateDrink);
 
 /**
  * DELETE /drinks/{id}
- * @summary Delete a drink log by ID
+ * @summary Delete a drink log by ID (requires login)
  * @tags Drinks
  * @param {string} id.path.required - Drink ID
  */
-router.delete("/:id", deleteDrink);
+router.delete("/:id", requireAuth, deleteDrink);
 
 module.exports = router;
