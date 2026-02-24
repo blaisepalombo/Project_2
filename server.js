@@ -3,9 +3,8 @@ const cors = require("cors");
 require("dotenv").config();
 
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
+const { MongoStore } = require("connect-mongo");
 const passport = require("passport");
-
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger-output.json");
 
@@ -15,11 +14,23 @@ const { configurePassport } = require("./src/auth/passport");
 
 const app = express();
 
-// If you later call API from a separate front-end, you need credentials enabled.
-// If you are only using Swagger UI on the same domain, this still works.
-app.use(cors({ origin: true, credentials: true }));
+/**
+ * CORS
+ * Allow credentials so session cookies work
+ */
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
+/**
+ * Session configuration
+ * Stores sessions in MongoDB (required for production stability)
+ */
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -33,26 +44,40 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      secure: !!process.env.RENDER_EXTERNAL_HOSTNAME, // HTTPS only on Render
+      secure: !!process.env.RENDER_EXTERNAL_HOSTNAME, // true on Render (HTTPS)
     },
   })
 );
 
+/**
+ * Passport configuration
+ */
 configurePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
+/**
+ * Health check
+ */
 app.get("/", (req, res) => {
   res.json({ status: "ok", service: "energy-drink-log-api" });
 });
 
+/**
+ * Routes
+ */
 app.use("/", router);
+
+/**
+ * Swagger docs
+ */
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const PORT = process.env.PORT || 3000;
 
 async function start() {
   await connectToMongo();
+
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Docs: http://localhost:${PORT}/api-docs`);

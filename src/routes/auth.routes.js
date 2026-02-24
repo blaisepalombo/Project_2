@@ -52,6 +52,13 @@ router.post("/logout", (req, res, next) => {
   });
 });
 
+router.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+    res.status(200).send("Logged out. You can close this tab.");
+  });
+});
+
 router.get("/success", (req, res) => {
   res.status(200).send("Login successful. You can close this tab and use the API.");
 });

@@ -5,7 +5,8 @@ const isRender = !!process.env.RENDER_EXTERNAL_HOSTNAME;
 const doc = {
   info: {
     title: "Energy Drink Log API",
-    description: "CRUD API for logging energy drinks",
+    description:
+      "CRUD API for logging energy drinks. Write routes require Google login via /auth/google.",
   },
   host: isRender
     ? process.env.RENDER_EXTERNAL_HOSTNAME

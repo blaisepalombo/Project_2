@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Energy Drink Log API",
-    "description": "CRUD API for logging energy drinks",
+    "description": "CRUD API for logging energy drinks. Write routes require Google login via /auth/google.",
     "version": "1.0.0"
   },
   "host": "localhost:3000",
@@ -32,13 +32,13 @@
             "schema": {
               "type": "object",
               "properties": {
-                "sizeOz": {
-                  "example": "any"
-                },
                 "brand": {
                   "example": "any"
                 },
                 "drinkName": {
+                  "example": "any"
+                },
+                "sizeOz": {
                   "example": "any"
                 },
                 "caffeineMg": {
@@ -47,13 +47,13 @@
                 "sugarG": {
                   "example": "any"
                 },
-                "purchasedAt": {
-                  "example": "any"
-                },
                 "rating": {
                   "example": "any"
                 },
                 "notes": {
+                  "example": "any"
+                },
+                "purchasedAt": {
                   "example": "any"
                 }
               }
@@ -66,6 +66,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -87,9 +90,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -114,13 +114,13 @@
             "schema": {
               "type": "object",
               "properties": {
-                "sizeOz": {
-                  "example": "any"
-                },
                 "brand": {
                   "example": "any"
                 },
                 "drinkName": {
+                  "example": "any"
+                },
+                "sizeOz": {
                   "example": "any"
                 },
                 "caffeineMg": {
@@ -129,13 +129,13 @@
                 "sugarG": {
                   "example": "any"
                 },
-                "purchasedAt": {
-                  "example": "any"
-                },
                 "rating": {
                   "example": "any"
                 },
                 "notes": {
+                  "example": "any"
+                },
+                "purchasedAt": {
                   "example": "any"
                 }
               }
@@ -143,11 +143,14 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"
@@ -168,17 +171,85 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/auth/google": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/success": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/failed": {
+      "get": {
+        "description": "",
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
