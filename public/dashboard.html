@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard | Energy Drink Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bungee&family=Rajdhani:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
@@ -12,7 +18,7 @@
       <a class="brand" href="/">Energy Drink Tracker</a>
 
       <nav class="nav-actions">
-        <a class="btn btn-secondary" href="/form">Add Drink</a>
+        <a class="btn btn-secondary" href="/form" id="addDrinkLink">Add Drink</a>
         <button class="btn btn-primary" id="logoutButton" type="button">Logout</button>
       </nav>
     </div>
@@ -22,7 +28,7 @@
     <section class="top-grid">
       <article class="panel">
         <p class="eyebrow">Account</p>
-        <h1>Dashboard</h1>
+        <h1 class="page-title">Dashboard</h1>
         <p id="authStatus" class="muted">Checking login status...</p>
       </article>
 
@@ -139,6 +145,17 @@
       </div>
     </section>
   </main>
+
+  <div class="modal-overlay" id="loginPopup" hidden>
+    <div class="modal-card">
+      <h3>Sign in required</h3>
+      <p>You need to sign in with Google before you can add a drink.</p>
+      <div class="modal-actions">
+        <a class="btn btn-primary" href="/auth/google">Sign in</a>
+        <button class="btn btn-secondary" type="button" id="closeLoginPopup">Close</button>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="/js/dashboard.js"></script>
 </body>

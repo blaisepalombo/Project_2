@@ -1,8 +1,11 @@
-import { getDrinks, getDrinkStats, deleteDrink } from "./api.js";
+import { getDrinks, getDrinkStats, deleteDrink, getCurrentUser } from "./api.js";
 import { loadUserStatus, handleLogout } from "./auth.js";
 
 const authStatus = document.querySelector("#authStatus");
 const logoutButton = document.querySelector("#logoutButton");
+const addDrinkLink = document.querySelector("#addDrinkLink");
+const loginPopup = document.querySelector("#loginPopup");
+const closeLoginPopup = document.querySelector("#closeLoginPopup");
 const filterForm = document.querySelector("#filterForm");
 const resetFiltersButton = document.querySelector("#resetFilters");
 const drinksGrid = document.querySelector("#drinksGrid");
@@ -18,10 +21,7 @@ const statRating = document.querySelector("#statRating");
 const statBrand = document.querySelector("#statBrand");
 
 let currentPage = 1;
-let currentFilters = {
-  sort: "newest",
-  limit: 9,
-};
+let isLoggedIn = false;
 
 function showMessage(message, type = "error") {
   messageBox.textContent = message;
@@ -33,6 +33,18 @@ function clearMessage() {
   messageBox.hidden = true;
   messageBox.textContent = "";
   messageBox.className = "message";
+}
+
+function openLoginPopup() {
+  if (loginPopup) {
+    loginPopup.hidden = false;
+  }
+}
+
+function closePopup() {
+  if (loginPopup) {
+    loginPopup.hidden = true;
+  }
 }
 
 function formatDate(value) {
@@ -120,7 +132,6 @@ async function loadDashboard() {
 
   try {
     const filters = getFiltersFromForm();
-    currentFilters = { ...filters };
 
     const [drinkResult, statsResult] = await Promise.all([
       getDrinks(filters),
@@ -187,5 +198,39 @@ logoutButton?.addEventListener("click", async () => {
   }
 });
 
-await loadUserStatus(authStatus);
-await loadDashboard();
+addDrinkLink?.addEventListener("click", async (event) => {
+  if (isLoggedIn) return;
+
+  event.preventDefault();
+
+  try {
+    const data = await getCurrentUser();
+    isLoggedIn = Boolean(data?.user);
+
+    if (isLoggedIn) {
+      window.location.href = "/form";
+      return;
+    }
+  } catch (error) {
+    isLoggedIn = false;
+  }
+
+  openLoginPopup();
+});
+
+closeLoginPopup?.addEventListener("click", closePopup);
+
+loginPopup?.addEventListener("click", (event) => {
+  if (event.target === loginPopup) {
+    closePopup();
+  }
+});
+
+async function init() {
+  const user = await loadUserStatus(authStatus);
+  isLoggedIn = Boolean(user);
+  closePopup();
+  await loadDashboard();
+}
+
+await init();
