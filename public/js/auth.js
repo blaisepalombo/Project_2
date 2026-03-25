@@ -50,11 +50,10 @@ function updateStatusTarget(user, targetElement) {
   if (!targetElement) return;
 
   if (user) {
-    const name = user.displayName || "Logged in user";
-    const email = user.email ? ` (${user.email})` : "";
-    targetElement.textContent = `Signed in as ${name}${email}`;
+    const name = user.displayName || "User";
+    targetElement.textContent = `Viewing your dashboard as ${name}.`;
   } else {
-    targetElement.innerHTML = `You are not logged in. <a href="${API_BASE}/auth/google">Sign in with Google</a> to add new drinks.`;
+    targetElement.innerHTML = `You are not signed in. <a href="${API_BASE}/auth/google">Sign in with Google</a> to view and manage your drinks.`;
   }
 }
 
