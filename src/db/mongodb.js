@@ -4,6 +4,19 @@ require("dotenv").config();
 let client;
 let db;
 
+async function ensureIndexes(database) {
+  const drinks = database.collection("drinks");
+
+  await Promise.all([
+    drinks.createIndex({ userId: 1, createdAt: -1 }),
+    drinks.createIndex({ userId: 1, brand: 1 }),
+    drinks.createIndex({ userId: 1, rating: -1, createdAt: -1 }),
+    drinks.createIndex({ userId: 1, caffeineMg: -1, createdAt: -1 }),
+  ]);
+
+  console.log("MongoDB indexes ensured for drinks collection");
+}
+
 async function connectToMongo() {
   const uri = process.env.MONGODB_URI;
   const dbName = process.env.DB_NAME;
@@ -15,6 +28,8 @@ async function connectToMongo() {
   await client.connect();
 
   db = client.db(dbName);
+  await ensureIndexes(db);
+
   console.log(`Connected to MongoDB database: ${dbName}`);
 }
 

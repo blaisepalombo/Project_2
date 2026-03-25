@@ -121,3 +121,10 @@
 .card-actions {
   margin-top: 1rem;
 }
+
+.loading-state {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+  background: var(--panel-soft);
+}

@@ -17,6 +17,7 @@ const statRating = document.querySelector("#statRating");
 const statBrand = document.querySelector("#statBrand");
 
 let currentPage = 1;
+let dashboardRequestId = 0;
 
 function showMessage(message, type = "error") {
   messageBox.textContent = message;
@@ -53,6 +54,26 @@ function setStats(stats) {
   statBrand.textContent = topBrand;
 }
 
+function setStatsLoading() {
+  statTotal.textContent = "--";
+  statCaffeine.textContent = "--";
+  statRating.textContent = "--";
+  statBrand.textContent = "--";
+}
+
+function renderLoadingState() {
+  drinksGrid.innerHTML = `
+    <div class="loading-state">
+      <p class="muted">Loading your drinks...</p>
+    </div>
+  `;
+  resultsMeta.textContent = "Loading...";
+  pageLabel.textContent = "Page --";
+  prevPage.disabled = true;
+  nextPage.disabled = true;
+  setStatsLoading();
+}
+
 function createDrinkCard(drink) {
   const article = document.createElement("article");
   article.className = "drink-card";
@@ -84,10 +105,14 @@ function createDrinkCard(drink) {
     if (!confirmed) return;
 
     try {
+      deleteButton.disabled = true;
+      deleteButton.textContent = "Deleting...";
       await deleteDrink(drink._id);
       showMessage("Drink deleted successfully.", "success");
       await loadDashboard();
     } catch (error) {
+      deleteButton.disabled = false;
+      deleteButton.textContent = "Delete";
       showMessage(error.message || "Failed to delete drink.");
     }
   });
@@ -112,7 +137,9 @@ function getFiltersFromForm() {
 }
 
 async function loadDashboard() {
+  const requestId = ++dashboardRequestId;
   clearMessage();
+  renderLoadingState();
 
   try {
     const filters = getFiltersFromForm();
@@ -122,28 +149,47 @@ async function loadDashboard() {
       getDrinkStats(filters),
     ]);
 
+    if (requestId !== dashboardRequestId) {
+      return;
+    }
+
     drinksGrid.innerHTML = "";
 
     const drinks = drinkResult.data || [];
     const pagination = drinkResult.pagination || {};
     const total = pagination.total ?? 0;
-    const totalPages = pagination.totalPages ?? 1;
+    const totalPages = pagination.totalPages ?? 0;
+    const page = pagination.page || 1;
 
     resultsMeta.textContent = `${total} personal result${total === 1 ? "" : "s"} found`;
-    pageLabel.textContent = `Page ${pagination.page || 1} of ${totalPages || 1}`;
-    prevPage.disabled = (pagination.page || 1) <= 1;
-    nextPage.disabled = (pagination.page || 1) >= (totalPages || 1);
+    pageLabel.textContent = `Page ${page} of ${totalPages || 1}`;
+    prevPage.disabled = page <= 1;
+    nextPage.disabled = page >= (totalPages || 1) || totalPages === 0;
 
     if (drinks.length === 0) {
       drinksGrid.innerHTML = `<p class="muted">No drinks found in your tracker for the current filters.</p>`;
     } else {
+      const fragment = document.createDocumentFragment();
+
       drinks.forEach((drink) => {
-        drinksGrid.appendChild(createDrinkCard(drink));
+        fragment.appendChild(createDrinkCard(drink));
       });
+
+      drinksGrid.appendChild(fragment);
     }
 
     setStats(statsResult);
   } catch (error) {
+    if (requestId !== dashboardRequestId) {
+      return;
+    }
+
+    drinksGrid.innerHTML = `<p class="muted">Could not load your drinks right now.</p>`;
+    setStatsLoading();
+    resultsMeta.textContent = "Unable to load results";
+    pageLabel.textContent = "Page --";
+    prevPage.disabled = true;
+    nextPage.disabled = true;
     showMessage(error.message || "Failed to load drinks.");
   }
 }
@@ -170,9 +216,16 @@ prevPage?.addEventListener("click", async () => {
 });
 
 nextPage?.addEventListener("click", async () => {
+  nextPage.disabled = true;
   currentPage += 1;
   await loadDashboard();
 });
 
-await loadUserStatus(authStatus);
-await loadDashboard();
+renderLoadingState();
+
+try {
+  await loadUserStatus(authStatus);
+  await loadDashboard();
+} catch (error) {
+  showMessage(error.message || "Failed to initialize dashboard.");
+}
